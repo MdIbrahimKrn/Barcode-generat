@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Barcode Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #barcode {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Barcode Generator</h1>
+    <button type="button" onclick="generateRandomBarcode()">Generate Random 8-Digit Barcode</button>
+    <br><br>
+    <svg id="barcode"></svg>
+    <br>
+    <button id="download-btn" style="display:none;" onclick="downloadBarcode()">Download Barcode</button>
+
+    <script>
+        function generateRandomBarcode() {
+            var randomValue = Math.floor(10000000 + Math.random() * 90000000).toString();
+            JsBarcode("#barcode", randomValue, {
+                format: "CODE128"
+            });
+            document.getElementById('download-btn').style.display = 'block';
+        }
+
+        function downloadBarcode() {
+            var svg = document.getElementById('barcode');
+            var serializer = new XMLSerializer();
+            var svgString = serializer.serializeToString(svg);
+
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+            var img = new Image();
+            img.src = 'data:image/svg+xml;base64,' + btoa(svgString);
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                context.drawImage(img, 0, 0);
+                var pngFile = canvas.toDataURL('image/png');
+                var downloadLink = document.createElement('a');
+                downloadLink.href = pngFile;
+                downloadLink.download = 'barcode.png';
+                downloadLink.click();
+            };
+        }
+    </script>
+</body>
+</html>
